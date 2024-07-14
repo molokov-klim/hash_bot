@@ -33,6 +33,7 @@ jobs:
 
       - name: Start Docker daemon
         run: |
+          echo "Image Tag: ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest"
           nohup dockerd --host=tcp://0.0.0.0:2375 --host=unix:///var/run/docker.sock &
           sleep 20
           docker info
