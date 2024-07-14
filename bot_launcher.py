@@ -1,8 +1,14 @@
+"""
+hash_bot entrypoint
+"""
 import logging
 import bot_base
 
 
 def enable_debug():
+    """
+    Включение логгирования
+    """
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
     requests_log = logging.getLogger("requests.packages.urllib3")
@@ -10,5 +16,5 @@ def enable_debug():
     requests_log.propagate = True
 
 
-enable_debug()
-bot_base.start()
+manager = bot_base.BotManager()
+manager.start()
