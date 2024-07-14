@@ -30,6 +30,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          echo ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
           docker build -t ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest .
           docker push ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
         env:
