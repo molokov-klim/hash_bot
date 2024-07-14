@@ -3,7 +3,7 @@ name: Build and Deploy
 on: [push]
 
 env:
-  CI_REGISTRY_USERNAME: ${{ secrets.CI_REGISTRY_USERNAME }}
+  CI_REGISTRY_USER: ${{ secrets.CI_REGISTRY_USER }}
   CI_REGISTRY_PASSWORD: ${{ secrets.CI_REGISTRY_PASSWORD }}
   SSH_HOST: ${{ secrets.SSH_HOST }}
   SSH_USER: ${{ secrets.SSH_USER }}
@@ -69,11 +69,11 @@ jobs:
       - name: Deploy to server
         run: |
           sshpass -p "${{ env.SSH_PASSWORD }}" ssh -o StrictHostKeyChecking=no ${{ env.SSH_USER }}@${{ env.SSH_HOST }} "
-          docker login -u '${{ env.CI_REGISTRY_USERNAME }}' -p '${{ env.CI_REGISTRY_PASSWORD }}'
-          docker pull ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest
+          docker login -u '${{ env.CI_REGISTRY_USER }}' -p '${{ env.CI_REGISTRY_PASSWORD }}'
+          docker pull ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
           docker stop ${{ env.CI_PROJECT_NAME }} || true
           docker rm ${{ env.CI_PROJECT_NAME }} || true
-          docker run -d -p ${{ env.TELEGRAM_PORT }}:${{ env.TELEGRAM_PORT }} --device=/dev/bus/usb:/dev/bus/usb --name ${{ env.CI_PROJECT_NAME }} -e BOT_TOKEN=${{ env.BOT_TOKEN }} ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest
+          docker run -d -p ${{ env.TELEGRAM_PORT }}:${{ env.TELEGRAM_PORT }} --device=/dev/bus/usb:/dev/bus/usb --name ${{ env.CI_PROJECT_NAME }} -e BOT_TOKEN=${{ env.BOT_TOKEN }} ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
           images=\$(docker images -f 'dangling=true' -q)
           if [ -n \"\$images\" ]; then
             docker rmi -f \$images
