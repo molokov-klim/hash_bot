@@ -39,17 +39,23 @@ jobs:
         env:
           DOCKER_TLS_CERTDIR: ""
 
+      - name: Debug Environment Variables
+        run: |
+          echo "CI_REGISTRY_USER=${{ env.CI_REGISTRY_USER }}"
+          echo "CI_PROJECT_NAME=${{ env.CI_PROJECT_NAME }}"
+          echo "Image Tag: ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest"
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ env.CI_REGISTRY_USERNAME }}
+          username: ${{ env.CI_REGISTRY_USER }}
           password: ${{ env.CI_REGISTRY_PASSWORD }}
 
       - name: Build and push Docker image
         run: |
           docker build --build-arg BOT_TOKEN=${{ env.BOT_TOKEN }} \
-                       -t ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest .
-          docker push ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest
+                       -t ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest .
+          docker push ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
 
   deploy:
     runs-on: ubuntu-latest
