@@ -17,46 +17,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    services:
-      docker:
-        image: docker:19.03.12
-        options: --privileged  # Required for Docker-in-Docker
-        ports:
-          - 2375:2375
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
-
-      - name: Start Docker daemon
-        run: |
-          echo "Image Tag: ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest"
-          nohup dockerd --host=tcp://0.0.0.0:2375 --host=unix:///var/run/docker.sock &
-          sleep 20
-          docker info
-        env:
-          DOCKER_TLS_CERTDIR: ""
-
-      - name: Debug Environment Variables
-        run: |
-          echo "CI_REGISTRY_USER=${{ env.CI_REGISTRY_USER }}"
-          echo "CI_PROJECT_NAME=${{ env.CI_PROJECT_NAME }}"
-          echo "Image Tag: ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest"
+        uses: docker/setup-buildx-action@v2
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ env.CI_REGISTRY_USER }}
-          password: ${{ env.CI_REGISTRY_PASSWORD }}
+        run: echo "${{ env.CI_REGISTRY_PASSWORD }}" | docker login -u "${{ env.CI_REGISTRY_USERNAME }}" --password-stdin
 
       - name: Build and push Docker image
         run: |
-          docker build --build-arg BOT_TOKEN=${{ env.BOT_TOKEN }} \
-                       -t ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest .
-          docker push ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
+          docker build -t ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest .
+          docker push ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest
+        env:
+          CI_REGISTRY_USERNAME: ${{ env.CI_REGISTRY_USERNAME }}
+          CI_REGISTRY_PASSWORD: ${{ env.CI_REGISTRY_PASSWORD }}
 
   deploy:
     runs-on: ubuntu-latest
