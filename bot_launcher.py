@@ -1,5 +1,5 @@
 import logging
-import ci_bot
+import bot_base
 
 
 def enable_debug():
@@ -11,4 +11,4 @@ def enable_debug():
 
 
 enable_debug()
-ci_bot.start()
+bot_base.start()

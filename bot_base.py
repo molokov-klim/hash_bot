@@ -9,6 +9,7 @@ import telebot
 bot = telebot.TeleBot(os.getenv("BOT_TOKEN"), parse_mode="MARKDOWN")
 bot_thread = threading.Thread(target=bot.infinity_polling)
 
+
 def start():
     """
     Запуск бота
@@ -34,6 +35,5 @@ def hello(message: Message):
     """
     print(f"{inspect.currentframe().f_code.co_name}")
     bot.send_message(message.chat.id,
-                        text=f'Hello',
-                        reply_to_message_id=message.reply_to_message.message_id if message.reply_to_message else None if message.reply_to_message else None).message_id
-
+                     text=f'Hello',
+                     reply_to_message_id=message.reply_to_message.message_id if message.reply_to_message else None if message.reply_to_message else None).message_id
