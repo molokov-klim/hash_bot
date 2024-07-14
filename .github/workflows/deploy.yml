@@ -3,7 +3,7 @@ name: Build and Deploy
 on: [push]
 
 env:
-  CI_REGISTRY_USER: ${{ secrets.CI_REGISTRY_USER }}
+  CI_REGISTRY_USERNAME: ${{ secrets.CI_REGISTRY_USERNAME }}
   CI_REGISTRY_PASSWORD: ${{ secrets.CI_REGISTRY_PASSWORD }}
   SSH_HOST: ${{ secrets.SSH_HOST }}
   SSH_USER: ${{ secrets.SSH_USER }}
@@ -42,14 +42,14 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ env.CI_REGISTRY_USER }}
+          username: ${{ env.CI_REGISTRY_USERNAME }}
           password: ${{ env.CI_REGISTRY_PASSWORD }}
 
       - name: Build and push Docker image
         run: |
           docker build --build-arg BOT_TOKEN=${{ env.BOT_TOKEN }} \
-                       -t ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest .
-          docker push ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
+                       -t ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest .
+          docker push ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest
 
   deploy:
     runs-on: ubuntu-latest
