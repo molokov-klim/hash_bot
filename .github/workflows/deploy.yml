@@ -31,14 +31,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
 
-      - name: Set up Docker-in-Docker
+      - name: Start Docker daemon
         run: |
-          dockerd-entrypoint.sh &
+          nohup dockerd --host=tcp://0.0.0.0:2375 --host=unix:///var/run/docker.sock &
           sleep 20
           docker info
         env:
-          DOCKER_HOST: tcp://localhost:2375
-          DOCKER_DRIVER: overlay2
           DOCKER_TLS_CERTDIR: ""
 
       - name: Log in to Docker Hub
