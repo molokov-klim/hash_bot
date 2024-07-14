@@ -17,11 +17,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-
     services:
       docker:
         image: docker:19.03.12
         options: --privileged  # Required for Docker-in-Docker
+        ports:
+          - 2375:2375
 
     steps:
       - name: Checkout code
@@ -32,6 +33,8 @@ jobs:
 
       - name: Set up Docker-in-Docker
         run: |
+          dockerd-entrypoint.sh &
+          sleep 20
           docker info
         env:
           DOCKER_HOST: tcp://localhost:2375
@@ -41,14 +44,14 @@ jobs:
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
-          username: ${{ env.CI_REGISTRY_USERNAME }}
+          username: ${{ env.CI_REGISTRY_USER }}
           password: ${{ env.CI_REGISTRY_PASSWORD }}
 
       - name: Build and push Docker image
         run: |
           docker build --build-arg BOT_TOKEN=${{ env.BOT_TOKEN }} \
-                       -t ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest .
-          docker push ${{ env.CI_REGISTRY_USERNAME }}/${{ env.CI_PROJECT_NAME }}:latest
+                       -t ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest .
+          docker push ${{ env.CI_REGISTRY_USER }}/${{ env.CI_PROJECT_NAME }}:latest
 
   deploy:
     runs-on: ubuntu-latest
